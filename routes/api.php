@@ -19,4 +19,9 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function(){
     Route::post('register', [PassportAuthController::class, 'register']);
     Route::post('login', [PassportAuthController::class, 'login']);
+    
+    Route::middleware('auth:api')->group(function(){
+        Route::post('logout', [PassportAuthController::class, 'logout']);
+        Route::post('refresh/token', [PassportAuthController::class, 'refresh']);
+    });
 });

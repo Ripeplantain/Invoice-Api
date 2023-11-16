@@ -54,4 +54,27 @@ class PassportAuthController extends Controller
             'message' => 'Invalid Password',
         ], 401);
     }
+
+    public function logout(){
+        $user = Auth::user();
+
+        $user->tokens->each(function($token, $key){
+            $token->delete();
+        });
+
+        return response()->json([
+            'message' => 'User logged out successfully',
+        ], 200);
+    }
+
+    public function refresh(Request $request){
+        $user = $request->user();
+        $user->tokens->each(function ($token) {
+            $token->delete();
+        });
+
+        $token = $user->createToken('auth_token')->accessToken;
+
+        return response()->json(['token' => $token], 200);
+    }
 }
