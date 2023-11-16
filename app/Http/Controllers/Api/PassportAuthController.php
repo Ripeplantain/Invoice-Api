@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Response;
 
 class PassportAuthController extends Controller
 {
@@ -16,6 +18,7 @@ class PassportAuthController extends Controller
                 'email' => 'required|email|unique:users',
                 'password' => 'required|string|min:6|max:50'
             ]);
+
         
         $user = User::create($validated_data);
         $token = $user->createToken('auth_token')->accessToken;
@@ -27,21 +30,28 @@ class PassportAuthController extends Controller
     }
     
     public function login(Request $request){
-        $request->validate([
+        $validated_data = $request->validate([
                 'email' => 'required|email',
                 'password' => 'required|string|min:6|max:50'
             ]);
 
-        if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){
-            $token = Auth::user()->createToken('auth_token')->accessToken;
+        $user = User::where('email', $validated_data['email'])->first();
+
+        if(!$user){
+            return response()->json([
+                'message' => 'User not found',
+            ], 404);
+        }
+
+        if(Hash::check($validated_data['password'], $user->password)){
             return response()->json([
                 'message' => 'User logged in successfully',
-                'token' => $token
+                'token' => $user->createToken('auth_token')->accessToken
             ], 200);
         }
-        
+
         return response()->json([
-            'message' => 'Invalid email or password',
+            'message' => 'Invalid Password',
         ], 401);
     }
 }
