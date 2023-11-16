@@ -1,11 +1,12 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Feature;
 
+use Tests\TestCase;
 use App\Models\User;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 class LoginTest extends TestCase
 {
@@ -86,3 +87,4 @@ class LoginTest extends TestCase
             ]);
     }
 }
+
