@@ -39,3 +39,4 @@ class RefreshTokenTest extends TestCase
         $this->assertNotEmpty($response['token']);
     }
 }
+
