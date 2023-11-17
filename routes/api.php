@@ -1,8 +1,11 @@
 <?php
 
-use App\Http\Controllers\Api\PassportAuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\ItemController;
+use App\Http\Controllers\Api\InvoiceController;
+use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\PassportAuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,5 +26,8 @@ Route::prefix('v1')->group(function(){
     Route::middleware('auth:api')->group(function(){
         Route::post('logout', [PassportAuthController::class, 'logout']);
         Route::post('refresh/token', [PassportAuthController::class, 'refresh']);
+        Route::resource('customer', CustomerController::class);
+        Route::resource('item', ItemController::class);
+        Route::resource('invoice', InvoiceController::class);
     });
 });
