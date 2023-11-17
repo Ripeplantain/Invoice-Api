@@ -42,6 +42,19 @@ class CustomerController extends Controller
 
 
     /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        $customer = Customer::findOrFail($id);
+
+        return response()->json([
+            'data' => $customer
+        ], 200);
+    }
+
+
+    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)

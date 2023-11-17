@@ -18,11 +18,11 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
 
-        // User::factory()->create([
-        //     'name' => 'John Doe',
-        //     'email' => 'test@test.com',
-        //     'password' => bcrypt('password'),
-        // ]);
+        User::factory()->create([
+            'name' => 'John Doe',
+            'email' => 'test@test.com',
+            'password' => bcrypt('password'),
+        ]);
         Customer::factory(1)->create();
         Invoice::factory(1)->create();
         Item::factory(1)->create();

@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\Models\Item;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class ItemController extends Controller
 {
@@ -12,23 +13,33 @@ class ItemController extends Controller
      */
     public function index()
     {
-        //
+        $items = Item::all();
+
+        return response()->json([
+            'data' => $items
+        ], 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        //
+        $validated_data = $request->validate([
+            'invoice_id' => 'required|exists:invoices,id',
+            'description' => 'required|string|min:3|max:60',
+            'unit_price' => 'required|numeric',
+            'quantity' => 'required|numeric',
+            'amount' => 'required|numeric'
+        ]);
+
+        $item = Item::create($validated_data);
+
+        return response()->json([
+            'message' => 'Item created successfully',
+            'data' => $item
+        ], 201);
     }
 
     /**
@@ -36,15 +47,11 @@ class ItemController extends Controller
      */
     public function show(string $id)
     {
-        //
-    }
+        $item = Item::findOrFail($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
+        return response()->json([
+            'data' => $item
+        ], 200);
     }
 
     /**
@@ -52,7 +59,21 @@ class ItemController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validated_data = $request->validate([
+            'invoice_id' => 'exists:invoices,id',
+            'description' => 'string|min:3|max:60',
+            'unit_price' => 'numeric',
+            'quantity' => 'numeric',
+            'amount' => 'numeric'
+        ]);
+
+        $item = Item::findOrFail($id);
+        $item->update($validated_data);
+
+        return response()->json([
+            'message' => 'Item updated successfully',
+            'data' => $item
+        ], 200);
     }
 
     /**
@@ -60,6 +81,11 @@ class ItemController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $item = Item::findOrFail($id);
+        $item->delete();
+
+        return response()->json([
+            'message' => 'Item deleted successfully'
+        ], 200);
     }
 }

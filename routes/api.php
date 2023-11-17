@@ -26,8 +26,8 @@ Route::prefix('v1')->group(function(){
     Route::middleware('auth:api')->group(function(){
         Route::post('logout', [PassportAuthController::class, 'logout']);
         Route::post('refresh/token', [PassportAuthController::class, 'refresh']);
-        Route::resource('customer', CustomerController::class);
-        Route::resource('item', ItemController::class);
-        Route::resource('invoice', InvoiceController::class);
+        Route::resource('customer', CustomerController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
+        Route::resource('item', ItemController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
+        Route::resource('invoice', InvoiceController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
     });
 });
