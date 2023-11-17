@@ -2,18 +2,26 @@
 
 namespace Tests\Feature\Item;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use App\Models\Item;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class RetrieveTest extends TestCase
 {
+    use RefreshDatabase, WithoutMiddleware;
+
     /**
-     * A basic feature test example.
+     * Test the show method.
+     *
+     * @return void
      */
-    public function test_example(): void
+    public function testShow()
     {
-        $response = $this->get('/');
+        $item = Item::factory()->create();
+
+        $response = $this->getJson('/api/v1/item/' . $item->id);
 
         $response->assertStatus(200);
     }
