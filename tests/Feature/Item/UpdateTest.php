@@ -21,11 +21,10 @@ class UpdateTest extends TestCase
         $item = Item::factory()->create();
 
         $newItemData = [
-            'invoice_id' => '1',
-            'description' => 'Updated Item',
-            'unit_price' => '1',
-            'quantity' => '1',
-            'amount' => '1'
+            'item_name' => 'Item 1',
+            'description' => 'Item 1 description',
+            'unit_price' => 100,
+            'quantity' => 15,
         ];
 
         $response = $this->putJson($this->privateUrl . $item->id, $newItemData);

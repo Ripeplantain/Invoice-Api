@@ -17,11 +17,10 @@ class ItemFactory extends Factory
     public function definition(): array
     {
         return [
+            'item_name' => $this->faker->word,
             'description' => $this->faker->sentence,
+            'unit_price' => $this->faker->randomFloat(2, 1, 100),
             'quantity' => $this->faker->numberBetween(1, 10),
-            'amount' => $this->faker->numberBetween(100, 1000),
-            'invoice_id' => \App\Models\Invoice::factory(),
-            'unit_price' => $this->faker->numberBetween(100, 1000),
         ];
     }
 }

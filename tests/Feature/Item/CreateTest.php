@@ -20,14 +20,12 @@ class CreateTest extends TestCase
      */
     public function testStore()
     {
-        $invoice = Invoice::factory()->create();
 
         $data = [
-            'invoice_id' => $invoice->id,
-            'description' => 'This is dummy text',
-            'unit_price' => 12.50,
-            'quantity' => 2,
-            'amount' => 25.00,
+            'item_name' => 'Item 1',
+            'description' => 'Item 1 description',
+            'unit_price' => 100,
+            'quantity' => 15,
         ];
 
         $response = $this->postJson($this->privateUrl, $data);
@@ -36,11 +34,10 @@ class CreateTest extends TestCase
             ->assertJson([
                 'message' => 'Item created successfully',
                 'data' => [
-                    'invoice_id' => $data['invoice_id'],
+                    'item_name' => $data['item_name'],
                     'description' => $data['description'],
                     'unit_price' => $data['unit_price'],
                     'quantity' => $data['quantity'],
-                    'amount' => $data['amount'],
                 ]
             ]);
 

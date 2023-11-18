@@ -18,7 +18,7 @@ class ListTest extends TestCase
      */
     public function testIndex()
     {
-        $items = Item::factory()->count(3)->create();
+        Item::factory()->count(3)->create();
 
         $response = $this->getJson('/api/v1/item');
 
@@ -27,11 +27,10 @@ class ListTest extends TestCase
             'data' => [
                 '*' => [
                     'id',
-                    'invoice_id',
+                    'item_name',
                     'description',
                     'unit_price',
                     'quantity',
-                    'amount',
                     'created_at',
                     'updated_at',
                 ]

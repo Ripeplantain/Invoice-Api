@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\Models\Invoice;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class InvoiceController extends Controller
 {
@@ -12,23 +13,39 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        //
+        $invoices = Invoice::all();
+
+        return response()->json([
+            'data' => $invoices
+        ], 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        //
+        $validated_data = $request->validate([
+            'customer_id' => 'required',
+            'company_name' => 'string|min:3|max:255',
+            'customer_mobile' => 'string|min:3|max:255',
+            'issue_date' => 'max:255',
+            'due_date' => 'max:255',
+            'item_id' => 'required',
+            'unit_price' => 'max:255',
+            'quantity' => 'max:255',
+            'amount' => 'max:255',
+        ]);
+
+        $validated_data['invoice_number'] = 'inv_'. uniqid();
+
+        $invoice = Invoice::create($validated_data);
+
+        return response()->json([
+            'message' => 'Invoice created successfully',
+            'data' => $invoice
+        ], 201);
     }
 
     /**
@@ -36,23 +53,39 @@ class InvoiceController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $invoice = Invoice::findOrFail($id);
+
+        return response()->json([
+            'data' => $invoice
+        ], 200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validated_data = $request->validate([
+            'customer_id' => 'exists:customers,id',
+            'company_name' => 'string|min:3|max:255',
+            'customer_mobile' => 'string|min:3|max:255',
+            'issue_date' => 'max:255',
+            'due_date' => 'max:255',
+            'item_id' => 'exists:items,id',
+            'unit_price' => 'max:255',
+            'quantity' => 'max:255',
+            'amount' => 'max:255',
+        ]);
+
+        $invoice = Invoice::findOrFail($id);
+
+        $invoice->update($validated_data);
+
+        return response()->json([
+            'message' => 'Invoice updated successfully',
+            'data' => $invoice
+        ], 200);
     }
 
     /**
@@ -60,6 +93,12 @@ class InvoiceController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $invoice = Invoice::findOrFail($id);
+
+        $invoice->delete();
+
+        return response()->json([
+            'message' => 'Invoice deleted successfully'
+        ], 200);
     }
 }

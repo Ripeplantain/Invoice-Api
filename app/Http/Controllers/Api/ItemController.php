@@ -27,11 +27,10 @@ class ItemController extends Controller
     public function store(Request $request)
     {
         $validated_data = $request->validate([
-            'invoice_id' => 'required|exists:invoices,id',
-            'description' => 'required|string|min:3|max:60',
+            'item_name' => 'required|string|min:3|max:60',
+            'description' => 'required|string|min:3|max:255',
             'unit_price' => 'required|numeric',
             'quantity' => 'required|numeric',
-            'amount' => 'required|numeric'
         ]);
 
         $item = Item::create($validated_data);
@@ -60,11 +59,10 @@ class ItemController extends Controller
     public function update(Request $request, string $id)
     {
         $validated_data = $request->validate([
-            'invoice_id' => 'exists:invoices,id',
-            'description' => 'string|min:3|max:60',
+            'item_name' => 'string|min:3|max:60',
+            'description' => 'string|min:3|max:255',
             'unit_price' => 'numeric',
             'quantity' => 'numeric',
-            'amount' => 'numeric'
         ]);
 
         $item = Item::findOrFail($id);
