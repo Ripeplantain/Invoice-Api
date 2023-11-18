@@ -32,7 +32,6 @@ class ListTest extends TestCase
                     'due_date',
                     'company_name',
                     'customer_mobile',
-                    'item_id',
                     'unit_price',
                     'quantity',
                     'amount',

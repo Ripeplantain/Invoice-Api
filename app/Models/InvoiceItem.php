@@ -2,20 +2,23 @@
 
 namespace App\Models;
 
+use App\Models\Item;
 use App\Models\Invoice;
-use App\Models\InvoiceItem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Item extends Model
+class InvoiceItem extends Model
 {
     use HasFactory;
 
+    protected $table = 'invoice_item';
+
     protected $fillable = [
-        'item_name',
-        'description',
+        'invoice_id',
+        'item_id',
         'unit_price',
         'quantity',
+        'amount',
     ];
 
     public function invoice()
@@ -23,8 +26,8 @@ class Item extends Model
         return $this->belongsTo(Invoice::class);
     }
 
-    public function invoiceItems()
+    public function item()
     {
-        return $this->hasMany(InvoiceItem::class);
+        return $this->belongsTo(Item::class);
     }
 }

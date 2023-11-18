@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+
 
 class InvoiceController extends Controller
 {
@@ -13,11 +15,13 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        $invoices = Invoice::all();
+        $invoices = Invoice::with('invoiceItems')->get();
+
 
         return response()->json([
-            'data' => $invoices
+            'data' => $invoices,
         ], 200);
+
     }
 
 
@@ -32,19 +36,25 @@ class InvoiceController extends Controller
             'customer_mobile' => 'string|min:3|max:255',
             'issue_date' => 'max:255',
             'due_date' => 'max:255',
-            'item_id' => 'required',
             'unit_price' => 'max:255',
             'quantity' => 'max:255',
             'amount' => 'max:255',
+            'invoice_item' => 'required|array',
         ]);
 
         $validated_data['invoice_number'] = 'inv_'. uniqid();
 
         $invoice = Invoice::create($validated_data);
 
+        foreach($validated_data['invoice_item'] as $item){
+            $invoice_item = new InvoiceItem($item);
+            $invoice_item->invoice_id = $invoice->id;
+            $invoice_item->save();
+        }
+
         return response()->json([
             'message' => 'Invoice created successfully',
-            'data' => $invoice
+            'data' => $invoice->invoiceItems
         ], 201);
     }
 
@@ -53,7 +63,7 @@ class InvoiceController extends Controller
      */
     public function show(string $id)
     {
-        $invoice = Invoice::findOrFail($id);
+        $invoice = Invoice::with('invoiceItems')->findOrFail($id);
 
         return response()->json([
             'data' => $invoice
@@ -78,7 +88,7 @@ class InvoiceController extends Controller
             'amount' => 'max:255',
         ]);
 
-        $invoice = Invoice::findOrFail($id);
+        $invoice = Invoice::with('invoiceItems')->findOrFail($id);
 
         $invoice->update($validated_data);
 

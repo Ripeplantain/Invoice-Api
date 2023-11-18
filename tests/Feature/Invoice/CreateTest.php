@@ -22,38 +22,44 @@ class CreateTest extends TestCase
      */
     public function testCreateInvoice()
     {
-        $item = Item::factory()->create();
-        $customer = Customer::factory()->create();
-
         $data = [
-            'customer_id' => $customer->id,
+            'customer_id' => Customer::factory()->create()->id,
             'company_name' => $this->faker->company,
             'customer_mobile' => $this->faker->phoneNumber,
-            'issue_date' => $this->faker->date,
-            'due_date' => $this->faker->date,
-            'item_id' => $item->id,
-            'unit_price' => $this->faker->randomFloat(2, 0, 999999),
-            'quantity' => $this->faker->randomDigit,
-            'amount' => $this->faker->randomFloat(2, 0, 999999),
+            'issue_date' => $this->faker->date(),
+            'due_date' => $this->faker->date(),
+            'unit_price' => $this->faker->randomFloat(2, 0, 100),
+            'quantity' => $this->faker->randomNumber(),
+            'amount' => $this->faker->randomFloat(2, 0, 100),
+            'invoice_item' => [
+                [
+                    'item_id' => Item::factory()->create()->id,
+                    'unit_price' => $this->faker->randomFloat(2, 0, 100),
+                    'quantity' => $this->faker->randomNumber(),
+                    'amount' => $this->faker->randomFloat(2, 0, 100),
+                ],
+                [
+                    'item_id' => Item::factory()->create()->id,
+                    'unit_price' => $this->faker->randomFloat(2, 0, 100),
+                    'quantity' => $this->faker->randomNumber(),
+                    'amount' => $this->faker->randomFloat(2, 0, 100),
+                ],
+            ],
         ];
 
-        $response = $this->postJson($this->privateUrl, $data);
+        $response = $this->postJson('/api/v1/invoice', $data);
 
         $response->assertStatus(201);
 
-        $response->assertJson([
-            'message' => 'Invoice created successfully',
-            'data' => [
-                'customer_id' => $customer->id,
-                'company_name' => $data['company_name'],
-                'customer_mobile' => $data['customer_mobile'],
-                'issue_date' => $data['issue_date'],
-                'due_date' => $data['due_date'],
-                'item_id' => $item->id,
-                'unit_price' => $data['unit_price'],
-                'quantity' => $data['quantity'],
-                'amount' => $data['amount'],
-            ],
+        $this->assertDatabaseHas('invoices', [
+            'customer_id' => $data['customer_id'],
+            'company_name' => $data['company_name'],
+            'customer_mobile' => $data['customer_mobile'],
+            'issue_date' => $data['issue_date'],
+            'due_date' => $data['due_date'],
+            'unit_price' => $data['unit_price'],
+            'quantity' => $data['quantity'],
+            'amount' => $data['amount'],
         ]);
     }
 }
