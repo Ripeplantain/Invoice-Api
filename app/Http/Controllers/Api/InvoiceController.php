@@ -36,9 +36,6 @@ class InvoiceController extends Controller
             'customer_mobile' => 'string|min:3|max:255',
             'issue_date' => 'max:255',
             'due_date' => 'max:255',
-            'unit_price' => 'max:255',
-            'quantity' => 'max:255',
-            'amount' => 'max:255',
             'invoice_item' => 'required|array',
         ]);
 
@@ -82,10 +79,6 @@ class InvoiceController extends Controller
             'customer_mobile' => 'string|min:3|max:255',
             'issue_date' => 'max:255',
             'due_date' => 'max:255',
-            'item_id' => 'exists:items,id',
-            'unit_price' => 'max:255',
-            'quantity' => 'max:255',
-            'amount' => 'max:255',
         ]);
 
         $invoice = Invoice::with('invoiceItems')->findOrFail($id);

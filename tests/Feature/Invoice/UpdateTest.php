@@ -25,9 +25,6 @@ class UpdateTest extends TestCase
             'customer_mobile' => $this->faker->phoneNumber,
             'issue_date' => $this->faker->date(),
             'due_date' => $this->faker->date(),
-            'unit_price' => $this->faker->randomFloat(2, 0, 100),
-            'quantity' => $this->faker->randomNumber(),
-            'amount' => $this->faker->randomFloat(2, 0, 1000),
         ];
 
         $response = $this->put('/api/v1/invoice/' . $invoice->id, $data);

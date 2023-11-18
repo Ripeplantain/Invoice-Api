@@ -28,9 +28,6 @@ class CreateTest extends TestCase
             'customer_mobile' => $this->faker->phoneNumber,
             'issue_date' => $this->faker->date(),
             'due_date' => $this->faker->date(),
-            'unit_price' => $this->faker->randomFloat(2, 0, 100),
-            'quantity' => $this->faker->randomNumber(),
-            'amount' => $this->faker->randomFloat(2, 0, 100),
             'invoice_item' => [
                 [
                     'item_id' => Item::factory()->create()->id,
@@ -57,9 +54,6 @@ class CreateTest extends TestCase
             'customer_mobile' => $data['customer_mobile'],
             'issue_date' => $data['issue_date'],
             'due_date' => $data['due_date'],
-            'unit_price' => $data['unit_price'],
-            'quantity' => $data['quantity'],
-            'amount' => $data['amount'],
         ]);
     }
 }
