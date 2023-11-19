@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Item;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
 
@@ -34,25 +36,47 @@ class InvoiceController extends Controller
             'customer_id' => 'required',
             'company_name' => 'string|min:3|max:255',
             'customer_mobile' => 'string|min:3|max:255',
-            'issue_date' => 'max:255',
-            'due_date' => 'max:255',
+            'issue_date' => 'max:255|date',
+            'due_date' => 'max:255|date',
             'invoice_item' => 'required|array',
         ]);
 
         $validated_data['invoice_number'] = 'inv_'. uniqid();
 
-        $invoice = Invoice::create($validated_data);
+        try{
+            DB::beginTransaction();
+            
+            $invoice = Invoice::create($validated_data);
 
-        foreach($validated_data['invoice_item'] as $item){
-            $invoice_item = new InvoiceItem($item);
-            $invoice_item->invoice_id = $invoice->id;
-            $invoice_item->save();
+            foreach($validated_data['invoice_item'] as $item){
+                $invoice_item = new InvoiceItem($item);
+                $invoice_item->invoice_id = $invoice->id;
+                $invoice_item->save();
+
+                $inventoryItem = Item::findOrFail($item['item_id']);
+                $inventoryItem->quantity -= $item['quantity'];
+                if($inventoryItem->quantity < 0){
+                    throw new \Exception('Quantity not available');
+                }
+                $inventoryItem->save();
+            }
+
+            DB::commit();
+
+            $invoice->refresh();
+
+            return response()->json([
+                'message' => 'Invoice created successfully',
+                'data' => $invoice,
+                'invoice_items' => $invoice->invoiceItems,
+            ], 201);
+        } catch(\Exception $e){
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Invoice creation failed',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        return response()->json([
-            'message' => 'Invoice created successfully',
-            'data' => $invoice->invoiceItems
-        ], 201);
     }
 
     /**
@@ -71,25 +95,61 @@ class InvoiceController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
         $validated_data = $request->validate([
-            'customer_id' => 'exists:customers,id',
+            'customer_id' => 'required',
             'company_name' => 'string|min:3|max:255',
             'customer_mobile' => 'string|min:3|max:255',
-            'issue_date' => 'max:255',
-            'due_date' => 'max:255',
+            'issue_date' => 'max:255|date',
+            'due_date' => 'max:255|date',
+            'invoice_item' => 'required|array',       
         ]);
+    
+        try {
+            DB::beginTransaction();
+    
+            $invoice = Invoice::findOrFail($id);
+            $invoice->update($validated_data);
+    
+            $originalQuantities = [];
+            foreach ($invoice->invoiceItems as $item) {
+                $originalQuantities[$item->item_id] = $item->quantity;
+            }
 
-        $invoice = Invoice::with('invoiceItems')->findOrFail($id);
-
-        $invoice->update($validated_data);
-
-        return response()->json([
-            'message' => 'Invoice updated successfully',
-            'data' => $invoice
-        ], 200);
+            foreach ($validated_data['invoice_item'] as $item) {
+                $invoiceItem = InvoiceItem::where('invoice_id', $id)->where('item_id', $item['item_id'])->first();
+                if ($invoiceItem) {
+                    $diff = $item['quantity'] - $originalQuantities[$item['item_id']];
+                    $invoiceItem->update(['quantity' => $item['quantity']]);
+    
+                    $inventoryItem = Item::findOrFail($item['item_id']);
+                    $inventoryItem->quantity -= $diff;
+                    if ($inventoryItem->quantity < 0) {
+                        throw new \Exception('Quantity not available');
+                    }
+                    $inventoryItem->save();
+                }
+            }
+    
+            DB::commit();
+    
+            $invoice->refresh();
+    
+            return response()->json([
+                'message' => 'Invoice updated successfully',
+                'data' => $invoice,
+                'invoice_items' => $invoice->invoiceItems,
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Invoice update failed',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
+    
 
     /**
      * Remove the specified resource from storage.

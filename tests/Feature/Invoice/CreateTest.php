@@ -32,13 +32,13 @@ class CreateTest extends TestCase
                 [
                     'item_id' => Item::factory()->create()->id,
                     'unit_price' => $this->faker->randomFloat(2, 0, 100),
-                    'quantity' => $this->faker->randomNumber(),
+                    'quantity' => 1,
                     'amount' => $this->faker->randomFloat(2, 0, 100),
                 ],
                 [
                     'item_id' => Item::factory()->create()->id,
                     'unit_price' => $this->faker->randomFloat(2, 0, 100),
-                    'quantity' => $this->faker->randomNumber(),
+                    'quantity' => 1,
                     'amount' => $this->faker->randomFloat(2, 0, 100),
                 ],
             ],

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\User;
 use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use App\Models\Item;
 use Illuminate\Database\Seeder;
 
@@ -24,5 +25,6 @@ class DatabaseSeeder extends Seeder
         ]);
         Invoice::factory(1)->create();
         Item::factory(1)->create();
+        InvoiceItem::factory(1)->create();
     }
 }
