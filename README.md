@@ -164,9 +164,7 @@ Request headers
 | ------------------ | ---------------- | ---------------- |
 | Yes                | Content-Type     | application/json |
 | Yes                | X-Requested-With | XMLHttpRequest   |
-| Optional           | Authorization    | Token {JWT}      |
-
-Refer the [api specification](https://github.com/gothinkster/laravel-realworld-example-app/blob/master/readme.md#api-specification) for more info.
+| Optional           | Authorization    | Bearer {token}   |
 
 
 ## Folders
